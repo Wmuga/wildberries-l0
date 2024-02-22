@@ -1,0 +1,15 @@
+{
+  "http":{
+    "port":8080
+  },
+  "nats":{
+    "port":8222
+  },
+  "db":{
+    "host":"localhost",
+    "port":5432,
+    "database": "wbl0",
+    "user": "wbl0user",
+    "password": "wbl0password"
+  }
+}

@@ -6,8 +6,9 @@ services:
   postgre:
     image: postgres:16.2-alpine3.19
     environment:
-      POSTGRES_PASSWORD: example
-      POSTGRES_USER: example
+      POSTGRES_PASSWORD: wbl0password
+      POSTGRES_USER: wbl0user
+      POSTGRES_DB: wbl0
     ports:
       - 5432:5432
 
