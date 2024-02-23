@@ -13,14 +13,16 @@ var (
 	ErrCantConvert = errors.New("can't convert interface{} to *entity.Order")
 )
 
-// Caches OrderRepo requests
-type cached struct {
+// Caches OrderRepo requests.
+// Create instace with NewCachedRepo
+type cachedRepo struct {
 	repo  OrderRepo
 	cache *cache.Cache
 }
 
+// Creates new instance of cached repo
 func NewCachedRepo(repo OrderRepo, config config.Cache) (OrderRepo, error) {
-	c := &cached{
+	c := &cachedRepo{
 		repo,
 		cache.New(time.Minute*time.Duration(config.TTLMins), time.Minute*time.Duration(config.PutgeMins)),
 	}
@@ -41,7 +43,7 @@ func NewCachedRepo(repo OrderRepo, config config.Cache) (OrderRepo, error) {
 }
 
 // Implementation of OrderRepo.AddOrder
-func (c *cached) AddOrder(order *entity.Order) error {
+func (c *cachedRepo) AddOrder(order *entity.Order) error {
 	// Add to repo
 	err := c.repo.AddOrder(order)
 	if err != nil {
@@ -56,7 +58,7 @@ func (c *cached) AddOrder(order *entity.Order) error {
 }
 
 // Implementation of OrderRepo.GetOrder
-func (c *cached) GetOrder(id string) (*entity.Order, error) {
+func (c *cachedRepo) GetOrder(id string) (*entity.Order, error) {
 	// Check in cache
 	orderInterface, found := c.cache.Get(id)
 	if !found {
@@ -81,7 +83,7 @@ func (c *cached) GetOrder(id string) (*entity.Order, error) {
 }
 
 // Implementation of OrderRepo.GetOrders
-func (c *cached) GetOrders(count int) ([]entity.Order, error) {
+func (c *cachedRepo) GetOrders(count int) ([]entity.Order, error) {
 	// No functional "Get many" in cache. Just passthrough
 	return c.repo.GetOrders(count)
 }

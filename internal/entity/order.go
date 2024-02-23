@@ -1,6 +1,7 @@
 package entity
 
 import (
+	"errors"
 	"time"
 
 	"gorm.io/gorm"
@@ -12,8 +13,8 @@ type Order struct {
 	OrderUID          string    `json:"order_uid" gorm:"unique"`
 	TrackNumber       string    `json:"track_number" gorm:"unique"`
 	Entry             string    `json:"entry"`
-	DeliveryID        int       `json:"-" gorm:"unique"`
-	Delivery          Delivery  `json:"delivery" gorm:"foreignKey:DeliveryID;references:DeliveryID"`
+	DeliveryID        int       `json:"-"`
+	Delivery          Delivery  `json:"delivery" gorm:"foreignKey:DeliveryID"`
 	Payment           Payment   `json:"payment" gorm:"foreignKey:Transaction;references:OrderUID"`
 	Items             []Item    `json:"items" gorm:"foreignKey:TrackNumber;references:TrackNumber"`
 	Locale            string    `json:"locale"`
@@ -28,14 +29,14 @@ type Order struct {
 
 type Delivery struct {
 	gorm.Model
-	DeliveryID int    `json:"-" gorm:"autoIncrement"`
-	Name       string `json:"name"`
-	Phone      string `json:"phone"`
-	Zip        string `json:"zip"`
-	City       string `json:"city"`
-	Address    string `json:"address"`
-	Region     string `json:"region"`
-	Email      string `json:"email"`
+	ID      int    `json:"-" gorm:"primaryKey,autoIncrement"`
+	Name    string `json:"name"`
+	Phone   string `json:"phone"`
+	Zip     string `json:"zip"`
+	City    string `json:"city"`
+	Address string `json:"address"`
+	Region  string `json:"region"`
+	Email   string `json:"email"`
 }
 
 type Payment struct {
@@ -65,4 +66,29 @@ type Item struct {
 	NmID        int    `json:"nm_id"`
 	Brand       string `json:"brand"`
 	Status      int    `json:"status"`
+}
+
+var (
+	ErrWrongTrackNumber = errors.New("wrong track number")
+	ErrWrongDeliveryID  = errors.New("wrong delivery id")
+	ErrWrongPayment     = errors.New("wrong payment transaction")
+)
+
+// Verifies all foreign keys
+func (order *Order) Verify() error {
+	for _, item := range order.Items {
+		if item.TrackNumber != order.TrackNumber {
+			return ErrWrongTrackNumber
+		}
+	}
+
+	if order.DeliveryID != 0 && order.DeliveryID != order.Delivery.ID {
+		return ErrWrongDeliveryID
+	}
+
+	if order.Payment.Transaction != order.OrderUID {
+		return ErrWrongPayment
+	}
+
+	return nil
 }
