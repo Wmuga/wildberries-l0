@@ -9,9 +9,10 @@ import (
 // Full application configuration.
 // Create new instance with NewConfig()
 type Config struct {
-	HTTP `json:"http"`
-	Nats `json:"nats"`
-	DB   `json:"db"`
+	HTTP  `json:"http"`
+	Nats  `json:"nats"`
+	DB    `json:"db"`
+	Cache `json:"cache"`
 }
 
 // Database connection configuration
@@ -31,6 +32,12 @@ type Nats struct {
 // HTTP host configuration
 type HTTP struct {
 	Port int `json:"port"`
+}
+
+type Cache struct {
+	TTLMins     int `json:"ttl_mins"`
+	PutgeMins   int `json:"purge_mins"`
+	RestoreSize int `json:"restore_size"`
 }
 
 // Reads config.json and creates new instance of Config.

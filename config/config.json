@@ -11,5 +11,10 @@
     "database": "wbl0",
     "user": "wbl0user",
     "password": "wbl0password"
+  },
+  "cache":{
+    "ttl_mins":5,
+    "purge_mins":10,
+    "restore_size":100
   }
 }
