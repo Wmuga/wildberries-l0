@@ -13,6 +13,8 @@ const (
 	dsnFormat = "host=%s user=%s password=%s dbname=%s port=%d sslmode=disable"
 )
 
+// Postgres repo.
+// Create instace with NewPostgresRepo
 type postgresRepo struct {
 	db *gorm.DB
 }

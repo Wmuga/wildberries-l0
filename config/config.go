@@ -26,12 +26,13 @@ type DB struct {
 
 // Nats-streaming connection configuration
 type Nats struct {
-	Port int `json:"port"`
+	URL     string `json:"url"`
+	Subject string `json:"subject"`
 }
 
 // HTTP host configuration
 type HTTP struct {
-	Port int `json:"port"`
+	URL string `json:"url"`
 }
 
 type Cache struct {

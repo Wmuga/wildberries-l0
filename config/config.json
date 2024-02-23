@@ -1,9 +1,10 @@
 {
   "http":{
-    "port":8080
+    "url":":8080"
   },
   "nats":{
-    "port":8222
+    "url":"nats://localhost:8222",
+    "subject":"orders"
   },
   "db":{
     "host":"localhost",
