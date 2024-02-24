@@ -7,6 +7,7 @@ import (
 	"github.com/wmuga/wildberries-l0/internal/entity"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 const (
@@ -22,7 +23,9 @@ type postgresRepo struct {
 func NewPostgresRepo(config config.DB) (OrderRepo, error) {
 	// Open connection
 	dsn := fmt.Sprintf(dsnFormat, config.Host, config.User, config.Password, config.Database, config.Port)
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Silent),
+	})
 	if err != nil {
 		return nil, err
 	}

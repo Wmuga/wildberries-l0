@@ -3,7 +3,7 @@
     "url":":8080"
   },
   "nats":{
-    "url":"nats://localhost:8222",
+    "url":"nats://localhost:4222",
     "subject":"orders"
   },
   "db":{
