@@ -82,7 +82,7 @@ func (order *Order) Verify() error {
 		}
 	}
 
-	if order.DeliveryID != 0 && order.DeliveryID != order.Delivery.ID {
+	if (order.DeliveryID != 0 || order.Delivery.ID != 0) && order.DeliveryID != order.Delivery.ID {
 		return ErrWrongDeliveryID
 	}
 
