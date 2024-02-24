@@ -23,17 +23,21 @@ func L0(config *config.Config) {
 	if err != nil {
 		log.Fatalln(err)
 	}
-
-	// adds orders to databse
-	nats.Subscibe(func(o *entity.Order, err error) {
+	// adds orders from nats to databse
+	err = nats.Subscibe(func(o *entity.Order, err error) {
 		if err != nil {
 			log.Println(err)
 			return
 		}
-		orders.AddOrder(o)
+		if err = orders.AddOrder(o); err != nil {
+			log.Println(err)
+		}
 	})
+	if err != nil {
+		log.Fatalln(err)
+	}
 	// add order from json if not exists
-	addFromJson(orders)
+	addFromJSON(orders)
 	// router for ui
 	r := mux.NewRouter()
 	controllers.NewOrdersRouter(r, orders, log.New(os.Stdout, "[UI]", log.LUTC))
@@ -42,7 +46,7 @@ func L0(config *config.Config) {
 	log.Println(http.ListenAndServe(config.HTTP.URL, r))
 }
 
-func addFromJson(orders *usecase.OrderService) {
+func addFromJSON(orders *usecase.OrderService) {
 	if _, err := orders.GetOrder("b563feb7b2b84b6test"); err == nil {
 		return
 	}

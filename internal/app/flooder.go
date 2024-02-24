@@ -33,7 +33,9 @@ func Flooder(cfg *config.Config) {
 				fmt.Println("Changed uid")
 			}
 		}
-		nats.Publsish(order)
+		if err := nats.Publsish(order); err != nil {
+			log.Println(err)
+		}
 		time.Sleep(time.Second * 1)
 	}
 }

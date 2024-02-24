@@ -46,5 +46,8 @@ func (api *ordersRouter) GetOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	api.templates.ExecuteTemplate(w, "order.html", order)
+	err = api.templates.ExecuteTemplate(w, "order.html", order)
+	if err != nil {
+		api.logger.Println(err)
+	}
 }

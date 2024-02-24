@@ -26,8 +26,8 @@ func NewNatsOrderService(cfg config.Nats) (*NatsOrderService, error) {
 }
 
 // Subscribes to order's topic. Calls callback on every message
-func (n *NatsOrderService) Subscibe(callback func(*entity.Order, error)) {
-	n.connection.Subscribe(n.subject, func(msg *nats.Msg) {
+func (n *NatsOrderService) Subscibe(callback func(*entity.Order, error)) error {
+	_, err := n.connection.Subscribe(n.subject, func(msg *nats.Msg) {
 		order := &entity.Order{}
 		err := json.Unmarshal(msg.Data, order)
 		if err != nil {
@@ -36,6 +36,7 @@ func (n *NatsOrderService) Subscibe(callback func(*entity.Order, error)) {
 		}
 		callback(order, order.Verify())
 	})
+	return err
 }
 
 // Published order to topic
@@ -44,6 +45,5 @@ func (n *NatsOrderService) Publsish(order *entity.Order) error {
 	if err != nil {
 		return err
 	}
-	n.connection.Publish(n.subject, message)
-	return nil
+	return n.connection.Publish(n.subject, message)
 }
