@@ -14,14 +14,29 @@ import (
 )
 
 func L0(config *config.Config) {
+	nats, err := usecase.NewNatsOrderService(config.Nats)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
 	orders, err := usecase.NewOrderService(config)
 	if err != nil {
 		log.Fatalln(err)
 	}
+
+	// adds orders to databse
+	nats.Subscibe(func(o *entity.Order, err error) {
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		orders.AddOrder(o)
+	})
 	// add order from json if not exists
 	addFromJson(orders)
+	// router for ui
 	r := mux.NewRouter()
-	controllers.NewOrdersRouter(r, orders, log.New(os.Stdout, "[API]", log.LUTC))
+	controllers.NewOrdersRouter(r, orders, log.New(os.Stdout, "[UI]", log.LUTC))
 
 	log.Println("Listening at", config.HTTP.URL)
 	log.Println(http.ListenAndServe(config.HTTP.URL, r))
