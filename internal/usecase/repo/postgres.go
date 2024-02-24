@@ -48,7 +48,7 @@ func (p *postgresRepo) GetOrder(id string) (*entity.Order, error) {
 	order := &entity.Order{}
 
 	// gorm.ErrRecordNotFound - не найдено
-	res := p.db.First(order, "order_uid = ?", id)
+	res := p.db.Preload("items").Preload("deliveries").Preload("payments").First(order, "order_uid = ?", id)
 	if res.Error != nil {
 		return nil, res.Error
 	}
@@ -58,10 +58,10 @@ func (p *postgresRepo) GetOrder(id string) (*entity.Order, error) {
 
 // Implementation of OrderRepo.GetOrders
 func (p *postgresRepo) GetOrders(count int) ([]entity.Order, error) {
-	var users []entity.Order
-	res := p.db.Limit(count).Find(&users)
+	var orders []entity.Order
+	res := p.db.Preload("Items").Preload("Delivery").Preload("Payment").Limit(count).Find(&orders)
 	if res.Error != nil {
 		return nil, res.Error
 	}
-	return users, nil
+	return orders, nil
 }

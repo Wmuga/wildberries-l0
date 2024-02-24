@@ -33,7 +33,11 @@ func NewCachedRepo(repo OrderRepo, config config.Cache) (OrderRepo, error) {
 		return nil, err
 	}
 	for _, order := range orders {
-		err = c.cache.Add(order.OrderUID, &order, cache.DefaultExpiration)
+		err := func(order entity.Order) error {
+			err := c.cache.Add(order.OrderUID, &order, cache.DefaultExpiration)
+			return err
+		}(order)
+
 		if err != nil {
 			return nil, err
 		}
