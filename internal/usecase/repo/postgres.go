@@ -48,7 +48,7 @@ func (p *postgresRepo) GetOrder(id string) (*entity.Order, error) {
 	order := &entity.Order{}
 
 	// gorm.ErrRecordNotFound - не найдено
-	res := p.db.Preload("items").Preload("deliveries").Preload("payments").First(order, "order_uid = ?", id)
+	res := p.db.Preload("Items").Preload("Delivery").Preload("Payment").First(order, "order_uid = ?", id)
 	if res.Error != nil {
 		return nil, res.Error
 	}
